@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For Ruba</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at top, #1e6bff, #0b1b52, #050816);
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Stars */
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Center */
+        .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        /* Stages */
+        .stage {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .stage.active {
+            display: block;
+        }
+
+        /* Intro */
+        #openBtn {
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            text-shadow: 0 0 15px #66b3ff;
+            transition: all 0.3s ease;
+        }
+
+        #openBtn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Heart */
+        .heart-container {
+            width: 320px;
+            height: 320px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .heart-half {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 190px;
+            transform: translate(-50%, -50%);
+            transition: 1s ease;
+            filter: drop-shadow(0 0 25px #ff4d88);
+            animation: heartPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes heartPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.08); }
+        }
+
+        .heart-half.right {
+            animation: heartPulseRight 1.2s ease-in-out infinite;
+        }
+
+        @keyframes heartPulseRight {
+            0%, 100% { transform: translate(-50%, -50%) scaleX(-1) scale(1); }
+            50% { transform: translate(-50%, -50%) scaleX(-1) scale(1.08); }
+        }
+
+        .heart-container.open .heart-half.left {
+            animation: none;
+            transform: translate(calc(-50% - 130px), -50%);
+        }
+
+        .heart-container.open .heart-half.right {
+            animation: none;
+            transform: translate(calc(-50% + 130px), -50%) scaleX(-1);
+        }
+
+        /* Name inside heart */
+        #insideText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            font-weight: bold;
+            color: #ff0000;
+            opacity: 0;
+            text-shadow: 0 0 20px #ff4d88, 0 0 40px #ff4d88, 0 0 60px #ff4d88;
+            transition: all 1s ease;
+            cursor: pointer;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        #insideText.show {
+            opacity: 1;
+            animation: pulse 1s infinite;
+            pointer-events: auto;
+        }
+
+        #insideText.moveUp {
+            top: 20%;
+        }
+
+        #insideText.finalPosition {
+            top: 30%;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        /* Floating hearts - different types with spinning */
+        .floating-heart {
+            position: fixed;
+            bottom: -50px;
+            font-size: 24px;
+            animation: riseAndSpin 4s linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes riseAndSpin {
+            0% { 
+                transform: translateY(0) rotate(0deg); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(-120vh) rotate(720deg); 
+                opacity: 0; 
+            }
+        }
+
+        /* Alternate spin direction */
+        .floating-heart.reverse {
+            animation: riseAndSpinReverse 4s linear forwards;
+        }
+
+        @keyframes riseAndSpinReverse {
+            0% { 
+                transform: translateY(0) rotate(0deg); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(-120vh) rotate(-720deg); 
+                opacity: 0; 
+            }
+        }
+
+        /* Wobble spin */
+        .floating-heart.wobble {
+            animation: riseAndWobble 4.5s linear forwards;
+        }
+
+        @keyframes riseAndWobble {
+            0% { 
+                transform: translateY(0) rotate(0deg) scale(1); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 1; 
+            }
+            25% { 
+                transform: translateY(-30vh) rotate(90deg) scale(1.2); 
+            }
+            50% { 
+                transform: translateY(-60vh) rotate(180deg) scale(0.8); 
+            }
+            75% { 
+                transform: translateY(-90vh) rotate(270deg) scale(1.1); 
+            }
+            100% { 
+                transform: translateY(-120vh) rotate(360deg) scale(1); 
+                opacity: 0; 
+            }
+        }
+
+        /* Spiral effect */
+        .floating-heart.spiral {
+            animation: riseAndSpiral 5s linear forwards;
+        }
+
+        @keyframes riseAndSpiral {
+            0% { 
+                transform: translateY(0) translateX(0) rotate(0deg); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 1; 
+            }
+            25% { 
+                transform: translateY(-30vh) translateX(30px) rotate(180deg); 
+            }
+            50% { 
+                transform: translateY(-60vh) translateX(-30px) rotate(360deg); 
+            }
+            75% { 
+                transform: translateY(-90vh) translateX(30px) rotate(540deg); 
+            }
+            100% { 
+                transform: translateY(-120vh) translateX(0) rotate(720deg); 
+                opacity: 0; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Intro -->
+    <div id="intro" class="stage active">
+        <div class="center">
+            <div id="openBtn">Open Message</div>
+        </div>
+    </div>
+
+    <!-- Heart Stage -->
+    <div id="heartStage" class="stage">
+        <div class="center">
+            <div class="heart-container" id="heartContainer">
+                <div class="heart-half left">🫀</div>
+                <div class="heart-half right">🫀</div>
+                <div id="insideText">Ruba</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="music" src="music.m4a" loop></audio>
+    <audio id="v1" src="voice1.m4a"></audio>
+    <audio id="v2" src="voice2.m4a"></audio>
+    <audio id="v3" src="voice3.m4a"></audio>
+    <audio id="v4" src="voice4.m4a"></audio>
+    <audio id="soft" src="soft.m4a" loop></audio>
+
+    <script>
+        // Create stars
+        for (let i = 0; i < 120; i++) {
+            const s = document.createElement("div");
+            s.className = "star";
+            s.style.left = Math.random() * 100 + "vw";
+            s.style.top = Math.random() * 100 + "vh";
+            s.style.animationDelay = Math.random() * 3 + "s";
+            document.body.appendChild(s);
+        }
+
+        let stage = 0;
+
+        const intro = document.getElementById("intro");
+        const heartStage = document.getElementById("heartStage");
+        const openBtn = document.getElementById("openBtn");
+        const heartContainer = document.getElementById("heartContainer");
+        const insideText = document.getElementById("insideText");
+
+        const music = document.getElementById("music");
+        const v1 = document.getElementById("v1");
+        const v2 = document.getElementById("v2");
+        const v3 = document.getElementById("v3");
+        const v4 = document.getElementById("v4");
+        const soft = document.getElementById("soft");
+
+        // Set music volume lower
+        music.volume = 0.3;
+
+        // Different heart emojis for variety
+        const heartTypes = ['💖', '💗', '💓', '💕', '💞', '💝', '❤️', '💘', '🩷', '🤍'];
+        const animationTypes = ['', 'reverse', 'wobble', 'spiral'];
+
+        function showStage(s) {
+            intro.classList.remove("active");
+            heartStage.classList.remove("active");
+            if (s === "intro") intro.classList.add("active");
+            if (s === "heart") heartStage.classList.add("active");
+        }
+
+        function spawnHeart() {
+            const h = document.createElement("div");
+            h.className = "floating-heart";
+            
+            // Random heart type
+            h.innerHTML = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+            
+            // Random animation type
+            const animType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
+            if (animType) {
+                h.classList.add(animType);
+            }
+            
+            h.style.left = Math.random() * 100 + "vw";
+            h.style.fontSize = (Math.random() * 20 + 18) + "px";
+            
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 5500);
+        }
+
+        function startHearts() {
+            setInterval(spawnHeart, 250);
+        }
+
+        // Stage 0: Click "Open Message"
+        openBtn.onclick = () => {
+            showStage("heart");
+            music.play().catch(() => {});
+            v1.play().catch(() => {});
+            stage = 1;
+        };
+
+        // Heart clicks - works anytime
+        heartContainer.onclick = () => {
+            if (stage === 1) {
+                heartContainer.classList.add("open");
+                insideText.classList.add("show");
+                v2.play().catch(() => {});
+                stage = 2;
+            }
+            else if (stage === 3) {
+                heartContainer.classList.add("open");
+                insideText.classList.remove("moveUp");
+                insideText.classList.add("show");
+                v4.play().catch(() => {});
+                stage = 4;
+            }
+        };
+
+        // Name clicks - works anytime
+        insideText.onclick = (e) => {
+            e.stopPropagation();
+
+            if (stage === 2) {
+                insideText.classList.add("moveUp");
+                heartContainer.classList.remove("open");
+                v3.play().catch(() => {});
+                stage = 3;
+
+                setTimeout(() => {
+                    if (stage === 3) {
+                        insideText.classList.remove("show");
+                        insideText.classList.remove("moveUp");
+                    }
+                }, 5000);
+            }
+            else if (stage === 4) {
+                insideText.classList.add("finalPosition");
+                heartContainer.classList.remove("open");
+                music.pause();
+                soft.play().catch(() => {});
+                startHearts();
+                stage = 5;
+            }
+        };
+    </script>
+
+</body>
+</html>
