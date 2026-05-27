@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>💕 رسالة خاصة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a1628 0%, #1a237e 50%, #0d1b2a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Stars Background */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Open Button */
+        .open-btn {
+            position: absolute;
+            padding: 20px 50px;
+            font-size: 24px;
+            background: linear-gradient(135deg, #e91e63, #ff5722);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(233, 30, 99, 0.4);
+            animation: btnPulse 2s ease-in-out infinite;
+        }
+
+        .open-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 50px rgba(233, 30, 99, 0.6);
+        }
+
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 10px 40px rgba(233, 30, 99, 0.4); }
+            50% { box-shadow: 0 10px 60px rgba(233, 30, 99, 0.8); }
+        }
+
+        .open-btn.hidden {
+            opacity: 0;
+            transform: scale(0);
+            pointer-events: none;
+        }
+
+        /* Heart Container */
+        .heart-container {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            cursor: pointer;
+            z-index: 50;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .heart-container.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .heart-container.move-up {
+            transform: translateY(-120px) scale(0.8);
+        }
+
+        /* Heart SVG */
+        .heart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            animation: heartPulse 1.5s ease-in-out infinite, heartGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        @keyframes heartGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 0, 85, 0.6)); }
+            50% { filter: drop-shadow(0 0 40px rgba(255, 0, 85, 1)); }
+        }
+
+        .heart-half {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .heart-left {
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+            transform-origin: right center;
+        }
+
+        .heart-right {
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+            transform-origin: left center;
+        }
+
+        .heart-container.open .heart-left {
+            transform: translateX(-30px) rotateY(-20deg);
+        }
+
+        .heart-container.open .heart-right {
+            transform: translateX(30px) rotateY(20deg);
+        }
+
+        .heart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .heart-svg path {
+            fill: url(#heartGradient);
+        }
+
+        /* Name */
+        .name {
+            position: absolute;
+            font-size: 42px;
+            font-weight: bold;
+            color: #ff1744;
+            text-shadow: 0 0 20px rgba(255, 23, 68, 0.8),
+                         0 0 40px rgba(255, 23, 68, 0.6),
+                         0 0 60px rgba(255, 23, 68, 0.4);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+            z-index: 60;
+            white-space: nowrap;
+            animation: namePulse 1.5s ease-in-out infinite, nameGlow 2s ease-in-out infinite;
+            animation-play-state: paused;
+        }
+
+        .name.visible {
+            opacity: 1;
+            transform: scale(1);
+            animation-play-state: running;
+        }
+
+        .name.inside-heart {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .name.top-screen {
+            top: 15%;
+            left: 50%;
+            transform: translate(-50%, 0) scale(1.2);
+        }
+
+        @keyframes namePulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        @keyframes nameGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 23, 68, 0.8), 0 0 40px rgba(255, 23, 68, 0.6); }
+            50% { text-shadow: 0 0 30px rgba(255, 23, 68, 1), 0 0 60px rgba(255, 23, 68, 0.8), 0 0 80px rgba(255, 23, 68, 0.6); }
+        }
+
+        /* Floating Hearts */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -100px;
+            animation: floatUp linear forwards;
+            opacity: 0.8;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120vh) rotate(360deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Audio elements hidden */
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Stars Background -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- Floating Hearts Container -->
+    <div class="floating-hearts" id="floatingHearts"></div>
+
+    <!-- Open Button -->
+    <button class="open-btn" id="openBtn">💌 Open Message</button>
+
+    <!-- Heart Container -->
+    <div class="heart-container" id="heartContainer">
+        <div class="heart-wrapper">
+            <!-- Left Half -->
+            <div class="heart-half heart-left">
+                <svg class="heart-svg" viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff1744"/>
+                            <stop offset="50%" style="stop-color:#e91e63"/>
+                            <stop offset="100%" style="stop-color:#ff5252"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M50,88 C20,65 5,50 5,30 C5,15 17,5 32,5 C42,5 50,12 50,12 C50,12 50,12 50,12 L50,88 Z"/>
+                </svg>
+            </div>
+            <!-- Right Half -->
+            <div class="heart-half heart-right">
+                <svg class="heart-svg" viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="heartGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff1744"/>
+                            <stop offset="50%" style="stop-color:#e91e63"/>
+                            <stop offset="100%" style="stop-color:#ff5252"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M50,88 C80,65 95,50 95,30 C95,15 83,5 68,5 C58,5 50,12 50,12 C50,12 50,12 50,12 L50,88 Z" fill="url(#heartGradient)"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Name -->
+    <div class="name" id="nameElement">Ruba</div>
+
+    <!-- Audio Elements -->
+    <audio id="musicAudio" loop>
+        <source src="music.m4a" type="audio/mp4">
+    </audio>
+    <audio id="voice1Audio">
+        <source src="voice1.m4a" type="audio/mp4">
+    </audio>
+    <audio id="voice2Audio">
+        <source src="voice2.m4a" type="audio/mp4">
+    </audio>
+    <audio id="voice3Audio">
+        <source src="voice3.m4a" type="audio/mp4">
+    </audio>
+    <audio id="voice4Audio">
+        <source src="voice4.m4a" type="audio/mp4">
+    </audio>
+    <audio id="softAudio">
+        <source src="soft.m4a" type="audio/mp4">
+    </audio>
+
+    <script>
+        // Create Stars
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            const starCount = 150;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        // Create Floating Hearts
+        function createFloatingHeart() {
+            const container = document.getElementById('floatingHearts');
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            
+            const hearts = ['❤️', '💕', '💖', '💗', '💓', '💝', '💘', '🫀', '💞'];
+            heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.fontSize = (Math.random() * 30 + 20) + 'px';
+            heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            
+            container.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 10000);
+        }
+
+        // State Management
+        let currentState = 0;
+        let floatingInterval = null;
+
+        // Elements
+        const openBtn = document.getElementById('openBtn');
+        const heartContainer = document.getElementById('heartContainer');
+        const nameElement = document.getElementById('nameElement');
+
+        // Audio Elements
+        const musicAudio = document.getElementById('musicAudio');
+        const voice1Audio = document.getElementById('voice1Audio');
+        const voice2Audio = document.getElementById('voice2Audio');
+        const voice3Audio = document.getElementById('voice3Audio');
+        const voice4Audio = document.getElementById('voice4Audio');
+        const softAudio = document.getElementById('softAudio');
+
+        // Play audio safely
+        function playAudio(audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log('Audio play failed:', e));
+        }
+
+        // Set music volume to low
+        musicAudio.volume = 0.3;
+
+        // State 0: Click Open Button
+        openBtn.addEventListener('click', () => {
+            if (currentState !== 0) return;
+            
+            openBtn.classList.add('hidden');
+            heartContainer.classList.add('visible');
+            
+            playAudio(musicAudio);
+            playAudio(voice1Audio);
+            
+            currentState = 1;
+        });
+
+        // Heart Click Handler
+        heartContainer.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            if (currentState === 1) {
+                // State 1: Open heart, show name
+                heartContainer.classList.add('open');
+                nameElement.classList.add('visible', 'inside-heart');
+                playAudio(voice2Audio);
+                currentState = 2;
+            } 
+            else if (currentState === 3) {
+                // State 3: Open heart again, show name
+                heartContainer.classList.add('open');
+                nameElement.classList.remove('inside-heart');
+                nameElement.classList.add('visible', 'inside-heart');
+                playAudio(voice4Audio);
+                currentState = 4;
+            }
+        });
+
+        // Name Click Handler
+        nameElement.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            if (currentState === 2) {
+                // State 2: Move heart up, close it, hide name after 5s
+                heartContainer.classList.remove('open');
+                heartContainer.classList.add('move-up');
+                playAudio(voice3Audio);
+                
+                setTimeout(() => {
+                    nameElement.classList.remove('visible', 'inside-heart');
+                }, 5000);
+                
+                currentState = 3;
+            }
+            else if (currentState === 4) {
+                // State 4: Final state - name moves to top, hearts float
+                nameElement.classList.remove('inside-heart');
+                nameElement.classList.add('top-screen');
+                nameElement.style.animation = 'nameGlow 1.5s ease-in-out infinite';
+                
+                // Stop music and play soft
+                musicAudio.pause();
+                musicAudio.currentTime = 0;
+                playAudio(softAudio);
+                
+                // Start floating hearts
+                floatingInterval = setInterval(createFloatingHeart, 300);
+                
+                currentState = 5;
+            }
+        });
+
+        // Initialize stars
+        createStars();
+    </script>
+</body>
+</html>
