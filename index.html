@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Ruba ❤️</title>
+
+<style>
+html,body{
+margin:0;
+height:100%;
+overflow:hidden;
+font-family:Arial;
+background:radial-gradient(circle at top,#1e6bff,#0b1b52,#050816);
+}
+
+/* stars */
+.star{
+position:absolute;
+width:2px;
+height:2px;
+background:white;
+border-radius:50%;
+opacity:0.7;
+animation:twinkle 3s infinite;
+}
+
+@keyframes twinkle{
+0%,100%{opacity:0;}
+50%{opacity:1;}
+}
+
+/* open msg */
+#openMsg{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+color:white;
+font-size:32px;
+cursor:pointer;
+text-shadow:0 0 15px #66b3ff;
+transition:0.3s;
+}
+
+/* heart */
+#heartBox{
+position:absolute;
+top:50%;
+left:50%;
+width:320px;
+height:320px;
+transform:translate(-50%,-50%);
+display:none;
+cursor:pointer;
+}
+
+.half{
+position:absolute;
+top:50%;
+left:50%;
+font-size:190px;
+transform:translate(-50%,-50%);
+transition:1s ease;
+filter:drop-shadow(0 0 25px #ff4d88);
+}
+
+#heartBox.open .left{
+transform:translate(calc(-50% - 130px),-50%);
+}
+
+#heartBox.open .right{
+transform:translate(calc(-50% + 130px),-50%) scaleX(-1);
+}
+
+/* inside text */
+#insideText{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:60px;
+color:white;
+opacity:0;
+text-shadow:0 0 10px #fff,0 0 20px #66b3ff;
+cursor:pointer;
+}
+
+#insideText.show{
+opacity:1;
+animation:pulse 1s infinite;
+}
+
+/* top name */
+#finalName{
+position:absolute;
+top:12%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:70px;
+color:white;
+opacity:0;
+text-shadow:0 0 10px #fff,0 0 20px #66b3ff;
+}
+
+#finalName.show{
+opacity:1;
+animation:pulse 1.2s infinite;
+}
+
+@keyframes pulse{
+0%{transform:translate(-50%,-50%) scale(1);}
+50%{transform:translate(-50%,-50%) scale(1.15);}
+100%{transform:translate(-50%,-50%) scale(1);}
+}
+
+/* hearts */
+.heart{
+position:absolute;
+bottom:-50px;
+font-size:24px;
+animation:rise 4s linear forwards;
+}
+
+@keyframes rise{
+0%{transform:translateY(0);opacity:0;}
+20%{opacity:1;}
+100%{transform:translateY(-120vh);opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<div id="openMsg">Open Message ❤️</div>
+
+<div id="heartBox">
+<div class="half left">🫀</div>
+<div class="half right">🫀</div>
+<div id="insideText">Ruba</div>
+</div>
+
+<div id="finalName">Ruba ❤️</div>
+
+<audio id="music" src="music.m4a" loop></audio>
+<audio id="v1" src="voice1.m4a"></audio>
+<audio id="v2" src="voice2.m4a"></audio>
+<audio id="v3" src="voice3.m4a"></audio>
+<audio id="v4" src="voice4.m4a"></audio>
+<audio id="soft" src="soft.m4a"></audio>
+
+<script>
+
+/* stars */
+for(let i=0;i<120;i++){
+const s=document.createElement("div");
+s.className="star";
+s.style.left=Math.random()*100+"vw";
+s.style.top=Math.random()*100+"vh";
+document.body.appendChild(s);
+}
+
+const openMsg=document.getElementById("openMsg");
+const heartBox=document.getElementById("heartBox");
+const insideText=document.getElementById("insideText");
+const finalName=document.getElementById("finalName");
+
+const music=document.getElementById("music");
+const v1=document.getElementById("v1");
+const v2=document.getElementById("v2");
+const v3=document.getElementById("v3");
+const v4=document.getElementById("v4");
+const soft=document.getElementById("soft");
+
+let step=0;
+let open=false;
+
+/* STEP 1 */
+openMsg.onclick=()=>{
+openMsg.style.opacity="0";
+openMsg.style.pointerEvents="none";
+setTimeout(()=>openMsg.remove(),300);
+
+heartBox.style.display="block";
+
+music.play().catch(()=>{});
+v1.play().catch(()=>{});
+};
+
+/* HEART CLICK SYSTEM */
+heartBox.onclick=()=>{
+
+/* OPEN / CLOSE HEART */
+if(!open){
+heartBox.classList.add("open");
+open=true;
+
+/* STEP 2 */
+if(step===0){
+step=1;
+insideText.classList.add("show");
+v2.play().catch(()=>{});
+}
+
+/* STEP 4 */
+else if(step===2){
+step=3;
+insideText.classList.add("show");
+v4.play().catch(()=>{});
+}
+
+}else{
+heartBox.classList.remove("open");
+open=false;
+
+/* STEP 3 */
+if(step===1){
+step=2;
+
+insideText.style.top="15%";
+v3.play().catch(()=>{});
+
+setTimeout(()=>{
+insideText.style.opacity="0";
+},5000);
+}
+
+/* STEP 5 */
+else if(step===3){
+step=4;
+
+insideText.style.display="none";
+finalName.classList.add("show");
+
+music.pause();
+soft.play().catch(()=>{});
+
+startHearts();
+}
+}
+};
+
+/* hearts */
+function spawnHeart(){
+const h=document.createElement("div");
+h.className="heart";
+h.innerHTML="💖";
+h.style.left=Math.random()*100+"vw";
+document.body.appendChild(h);
+setTimeout(()=>h.remove(),4000);
+}
+
+function startHearts(){
+setInterval(spawnHeart,300);
+}
+
+</script>
+
+</body>
+</html>
