@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For Ruba</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
         html, body {
             margin: 0;
             height: 100%;
@@ -70,7 +72,6 @@
             width: 320px;
             height: 320px;
             position: relative;
-            cursor: pointer;
         }
 
         .heart-half {
@@ -91,12 +92,51 @@
             transform: translate(-50%, -50%) scaleX(-1);
         }
 
+        /* Heart pulse animation */
+        .heart-container:not(.open) .heart-half.left {
+            animation: heartPulseLeft 1.2s infinite;
+        }
+
+        .heart-container:not(.open) .heart-half.right {
+            animation: heartPulseRight 1.2s infinite;
+        }
+
+        @keyframes heartPulseLeft {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        @keyframes heartPulseRight {
+            0%, 100% { transform: translate(-50%, -50%) scaleX(-1) scale(1); }
+            50% { transform: translate(-50%, -50%) scaleX(-1) scale(1.1); }
+        }
+
         .heart-container.open .heart-half.left {
             transform: translate(calc(-50% - 130px), -50%);
+            animation: none;
         }
 
         .heart-container.open .heart-half.right {
             transform: translate(calc(-50% + 130px), -50%) scaleX(-1);
+            animation: none;
+        }
+
+        /* Heart click area - center only */
+        .heart-click-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            z-index: 5;
+            border-radius: 50%;
+        }
+
+        .heart-click-area.disabled {
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         /* Name inside heart */
@@ -105,13 +145,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 60px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 70px;
+            font-weight: 700;
             color: white;
             opacity: 0;
             text-shadow: 0 0 20px #ff4d88, 0 0 40px #ff4d88, 0 0 60px #ff4d88;
             transition: all 1s ease;
             cursor: pointer;
             z-index: 10;
+            white-space: nowrap;
         }
 
         #insideText.show {
@@ -119,17 +162,43 @@
             animation: pulse 1s infinite;
         }
 
+        #insideText.disabled {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         #insideText.moveUp {
             top: 20%;
         }
 
         #insideText.finalPosition {
-            top: 30%;
+            top: 25%;
+            animation: pulse 1s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { transform: translate(-50%, -50%) scale(1); }
             50% { transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        /* Love text */
+        #loveText {
+            position: absolute;
+            top: 38%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Dancing Script', cursive;
+            font-size: 50px;
+            font-weight: 700;
+            color: white;
+            opacity: 0;
+            text-shadow: 0 0 20px #ff4d88, 0 0 40px #ff4d88;
+            transition: all 1s ease;
+            white-space: nowrap;
+        }
+
+        #loveText.show {
+            opacity: 1;
         }
 
         /* Floating hearts */
@@ -175,8 +244,10 @@
             <div class="heart-container" id="heartContainer">
                 <div class="heart-half left">🫀</div>
                 <div class="heart-half right">🫀</div>
+                <div class="heart-click-area" id="heartClickArea"></div>
                 <div id="insideText">Ruba</div>
             </div>
+            <div id="loveText">Bhbk</div>
         </div>
     </div>
 
@@ -190,12 +261,15 @@
 
     <script>
         let stage = 0;
+        let canClick = true;
 
         const intro = document.getElementById("intro");
         const heartStage = document.getElementById("heartStage");
         const openBtn = document.getElementById("openBtn");
         const heartContainer = document.getElementById("heartContainer");
+        const heartClickArea = document.getElementById("heartClickArea");
         const insideText = document.getElementById("insideText");
+        const loveText = document.getElementById("loveText");
 
         const music = document.getElementById("music");
         const v1 = document.getElementById("v1");
@@ -203,6 +277,18 @@
         const v3 = document.getElementById("v3");
         const v4 = document.getElementById("v4");
         const soft = document.getElementById("soft");
+
+        function disableClicks() {
+            canClick = false;
+            heartClickArea.classList.add("disabled");
+            insideText.classList.add("disabled");
+        }
+
+        function enableClicks() {
+            canClick = true;
+            heartClickArea.classList.remove("disabled");
+            insideText.classList.remove("disabled");
+        }
 
         function showStage(s) {
             intro.classList.remove("active");
@@ -214,7 +300,8 @@
         function spawnHeart() {
             const h = document.createElement("div");
             h.className = "floating-heart";
-            h.innerHTML = "💖";
+            const hearts = ["💖", "💕", "💗", "💓", "🫀", "💘", "❤️"];
+            h.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
             h.style.left = Math.random() * 100 + "vw";
             h.style.fontSize = (Math.random() * 15 + 20) + "px";
             document.body.appendChild(h);
@@ -227,55 +314,82 @@
 
         // Stage 0: Click "Open Message"
         openBtn.onclick = () => {
+            if (!canClick) return;
+            
+            disableClicks();
             showStage("heart");
             music.play().catch(() => {});
             v1.play().catch(() => {});
             stage = 1;
+
+            v1.onended = () => {
+                enableClicks();
+            };
         };
 
-        // Heart clicks
-        heartContainer.onclick = () => {
+        // Heart click area
+        heartClickArea.onclick = () => {
+            if (!canClick) return;
+
             // Stage 1: Open heart, show name
             if (stage === 1) {
+                disableClicks();
                 heartContainer.classList.add("open");
                 insideText.classList.add("show");
                 v2.play().catch(() => {});
                 stage = 2;
+
+                v2.onended = () => {
+                    enableClicks();
+                };
             }
             // Stage 3: Open heart again, show name again
             else if (stage === 3) {
+                disableClicks();
                 heartContainer.classList.add("open");
                 insideText.classList.remove("moveUp");
+                insideText.style.top = "50%";
                 insideText.style.opacity = "1";
                 insideText.classList.add("show");
                 v4.play().catch(() => {});
                 stage = 4;
+
+                v4.onended = () => {
+                    enableClicks();
+                };
             }
         };
 
         // Name clicks
         insideText.onclick = (e) => {
             e.stopPropagation();
+            if (!canClick) return;
 
             // Stage 2: Move name up, close heart, wait 5 sec then hide
             if (stage === 2) {
+                disableClicks();
                 insideText.classList.add("moveUp");
                 heartContainer.classList.remove("open");
                 v3.play().catch(() => {});
                 stage = 3;
 
-                setTimeout(() => {
-                    if (stage === 3) {
-                        insideText.classList.remove("show");
-                        insideText.classList.remove("moveUp");
-                        insideText.style.opacity = "0";
-                    }
-                }, 5000);
+                v3.onended = () => {
+                    setTimeout(() => {
+                        if (stage === 3) {
+                            insideText.classList.remove("show");
+                            insideText.classList.remove("moveUp");
+                            insideText.style.opacity = "0";
+                            insideText.style.top = "50%";
+                            enableClicks();
+                        }
+                    }, 5000);
+                };
             }
-            // Stage 4: Final - name stays up, hearts float, soft music
+            // Stage 4: Final - name stays up, love text shows, hearts float, soft music
             else if (stage === 4) {
                 insideText.classList.add("finalPosition");
                 heartContainer.classList.remove("open");
+                loveText.classList.add("show");
                 music.pause();
                 soft.play().catch(() => {});
                 startHearts();
